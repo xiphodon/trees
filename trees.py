@@ -8,6 +8,7 @@
 
 # 决策树
 import math
+import operator
 
 def createDataSet():
     '''
@@ -65,7 +66,7 @@ def chooseBestFeatureToSplit(dataSet):
     选择最好的数据集划分方式
     遍历整个数据集，循环计算香农熵和splitDataSet()函数
     :param dataSet: 数据集
-    :return:
+    :return: 最好的划分特征索引
     '''
     numFeatures = len(dataSet[0]) - 1 # 特征的个数，最后一列作为标签
     baseEntropy = calcShannonEnt(dataSet) # 计算原始数据的香农熵
@@ -84,8 +85,49 @@ def chooseBestFeatureToSplit(dataSet):
             bestFeature = i
     return bestFeature
 
+def majorityCnt(classList):
+    '''
+    获得计数最多的分类
+    :param classList: 分类列表
+    :return: 计数最多的分类
+    '''
+    classCount={}
+    for vote in classList:
+        if vote not in classCount.keys():
+            classCount[vote] = 0
+        classCount[vote] += 1
+    sortedClassCount = sorted(classCount.iteritems(), key=operator.itemgetter(1), reverse=True)
+    return sortedClassCount[0][0]
+
+def createTree(dataSet,labels):
+    '''
+    创建决策树
+    :param dataSet: 数据集
+    :param labels: 特征标签列表
+    :return:
+    '''
+    classList = [example[-1] for example in dataSet]
+    # 结束递归条件1：所有类标签完全相同，返回该标签
+    if classList.count(classList[0]) == len(classList):
+        return classList[0]
+    # 结束递归条件2：使用完所有的特征，获得计数最多的分类
+    if len(dataSet[0]) == 1:
+        return majorityCnt(classList)
+    bestFeat = chooseBestFeatureToSplit(dataSet)
+    bestFeatLabel = labels[bestFeat]
+    myTree = {bestFeatLabel:{}}
+    del(labels[bestFeat]) # 剔除该特征标签
+    featValues = [example[bestFeat] for example in dataSet] # 获得数据集中该特征的所有值
+    uniqueVals = set(featValues) # 该特征的所有选项去重
+    for value in uniqueVals: # 遍历该特征下的所有选项
+        subLabels = labels[:]
+        myTree[bestFeatLabel][value] = createTree(splitDataSet(dataSet, bestFeat, value),subLabels)
+    return myTree
+
 
 if __name__ == '__main__':
     dataSet, labels = createDataSet()
     print(calcShannonEnt(dataSet))
     print(splitDataSet(dataSet,0,1))
+    print(chooseBestFeatureToSplit(dataSet))
+    print(createTree(dataSet,labels))
