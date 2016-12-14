@@ -44,6 +44,48 @@ def calcShannonEnt(dataSet):
     return shannonEnt
 
 
+def splitDataSet(dataSet, axis, value):
+    '''
+    按照给定特征划分数据集
+    :param dataSet: 待划分的数据集
+    :param axis: 划分数据集的特征
+    :param value: 需要返回的特征的值
+    :return: 符合条件的数据列表
+    '''
+    retDataSet = []
+    for featVec in dataSet:
+        if featVec[axis] == value: # 将符合特征的数据值抽取出
+            reducedFeatVec = featVec[:axis]
+            reducedFeatVec.extend(featVec[axis+1:])
+            retDataSet.append(reducedFeatVec)
+    return retDataSet
+
+def chooseBestFeatureToSplit(dataSet):
+    '''
+    选择最好的数据集划分方式
+    遍历整个数据集，循环计算香农熵和splitDataSet()函数
+    :param dataSet: 数据集
+    :return:
+    '''
+    numFeatures = len(dataSet[0]) - 1 # 特征的个数，最后一列作为标签
+    baseEntropy = calcShannonEnt(dataSet) # 计算原始数据的香农熵
+    bestInfoGain = 0.0; bestFeature = -1 # 信息增量，最佳特征
+    for i in range(numFeatures): # 迭代完所有的特征
+        featList = [example[i] for example in dataSet] # 当前特征下的所有数据的特征值列表
+        uniqueVals = set(featList) # 列表去重
+        newEntropy = 0.0 # 熵
+        for value in uniqueVals:
+            subDataSet = splitDataSet(dataSet, i, value) # 划分数据集
+            prob = len(subDataSet)/float(len(dataSet)) # 划分后数据出现的频数
+            newEntropy += prob * calcShannonEnt(subDataSet) # 计算该特征的香农熵
+        infoGain = baseEntropy - newEntropy # 信息增益
+        if (infoGain > bestInfoGain): # 对比信息增益，获取最大增益量和最大增益量的特征
+            bestInfoGain = infoGain
+            bestFeature = i
+    return bestFeature
+
+
 if __name__ == '__main__':
     dataSet, labels = createDataSet()
     print(calcShannonEnt(dataSet))
+    print(splitDataSet(dataSet,0,1))
