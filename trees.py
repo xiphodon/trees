@@ -144,6 +144,31 @@ def classify(inputTree,featLabels,testVec):
     return classLabel
 
 
+def storeTree(inputTree, filename):
+    '''
+    持久化决策树，存储在磁盘
+    :param inputTree: 决策树字典
+    :param filename: 存储路径
+    :return: None
+    '''
+    import pickle
+    with open(filename, 'wb') as fw:
+        pickle.dump(inputTree, fw)
+    fw.close()
+
+
+def grabTree(filename):
+    '''
+    反序列化决策树，从磁盘中读取
+    :param filename: 存储路径
+    :return: 决策树字典
+    '''
+    import pickle
+    with open(filename, 'rb') as fr:
+        return pickle.load(fr)
+
+
+
 if __name__ == '__main__':
     dataSet, labels = createDataSet()
     # print(dataSet,labels)
@@ -153,3 +178,6 @@ if __name__ == '__main__':
     # print(createTree(dataSet,labels))
     import treePlotter
     print(classify(treePlotter.retrieveTree(0),labels,[1,0]))
+
+    storeTree(treePlotter.retrieveTree(0),'mytree.txt')
+    print(grabTree('mytree.txt'))
