@@ -125,9 +125,31 @@ def createTree(dataSet,labels):
     return myTree
 
 
+def classify(inputTree,featLabels,testVec):
+    '''
+    决策树分类函数
+    :param inputTree:
+    :param featLabels:
+    :param testVec:
+    :return:
+    '''
+    firstStr = list(inputTree.keys())[0]
+    secondDict = inputTree[firstStr]
+    featIndex = featLabels.index(firstStr) # 获得firstStr特征在测试featLabels中的索引
+    key = testVec[featIndex]
+    valueOfFeat = secondDict[key]
+    if isinstance(valueOfFeat, dict):
+        classLabel = classify(valueOfFeat, featLabels, testVec)
+    else: classLabel = valueOfFeat
+    return classLabel
+
+
 if __name__ == '__main__':
     dataSet, labels = createDataSet()
-    print(calcShannonEnt(dataSet))
-    print(splitDataSet(dataSet,0,1))
-    print(chooseBestFeatureToSplit(dataSet))
-    print(createTree(dataSet,labels))
+    # print(dataSet,labels)
+    # print(calcShannonEnt(dataSet))
+    # print(splitDataSet(dataSet,0,1))
+    # print(chooseBestFeatureToSplit(dataSet))
+    # print(createTree(dataSet,labels))
+    import treePlotter
+    print(classify(treePlotter.retrieveTree(0),labels,[1,0]))

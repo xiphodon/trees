@@ -137,8 +137,8 @@ def retrieveTree(i):
     :param i: 获取该索引对应的树字典
     :return: 返回树
     '''
-    listOfTrees =[{'no surfacing': {0: 'no', 1: {'flippers': {0: 'no', 1: 'yes'}}}},
-                  {'no surfacing': {0: 'no', 1: {'flippers': {0: {'head': {0: 'no', 1: 'yes'}}, 1: 'no'}}}}
+    listOfTrees =[{u'不浮出水面是否可以生存': {0: 'no', 1: {u'是否有脚蹼': {0: 'no', 1: 'yes'}}}},
+                  {u'不浮出水面是否可以生存': {0: 'no', 1: {u'是否有脚蹼': {0: {'head': {0: 'no', 1: 'yes'}}, 1: 'no'}}}}
                   ]
     return listOfTrees[i]
 
